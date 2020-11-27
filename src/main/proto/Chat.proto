@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+option java_package = "com.grpc.chat";
+
+import "google/protobuf/timestamp.proto";
+
+message Message{
+  string id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  string message = 3;
+}
+
+message MessageRequest{
+  Message message = 1;
+  User from = 2;
+  User to = 3;
+}
+
+message MessageResponse{}
+
+message Connect{
+  User user = 1;
+  bool active = 2;
+}
+
+message User{
+  string id = 1;
+  string name = 2;
+}
+
+service ChatService {
+  rpc sendMessage(MessageRequest) returns(MessageResponse);
+  rpc loadMessages(Connect) returns(stream Message);
+}
