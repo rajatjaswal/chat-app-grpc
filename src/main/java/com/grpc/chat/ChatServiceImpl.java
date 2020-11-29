@@ -1,5 +1,6 @@
 package com.grpc.chat;
 
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.util.*;
@@ -16,13 +17,18 @@ public class ChatServiceImpl extends ChatServiceGrpc.ChatServiceImplBase {
 
     @Override
     public void loadMessages(LoadMessageRequest request, StreamObserver<Message> responseObserver) {
-        User user = request.getFrom();
+        User from = request.getFrom();
+        User to = request.getTo();
         List<Message> msg = messages
                 .stream()
-                .filter(x -> x.getFrom().equals(request.getFrom()) && x.getTo().equals(request.getTo()))
+                .filter(x -> x.getFrom().getName().equals(from.getName()) && x.getTo().getName().equals(to.getName()))
                 .collect(Collectors.toList());
-        msg.forEach(responseObserver::onNext);
-        responseObserver.onCompleted();
+        if(msg.isEmpty()){
+            responseObserver.onError(Status.NOT_FOUND.withDescription("No Message Found").asRuntimeException());
+        }else{
+            msg.forEach(responseObserver::onNext);
+            responseObserver.onCompleted();
+        }
     }
 
     @Override
