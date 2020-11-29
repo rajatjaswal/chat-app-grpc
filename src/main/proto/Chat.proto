@@ -10,19 +10,15 @@ message Message{
   string id = 1;
   google.protobuf.Timestamp timestamp = 2;
   string message = 3;
-}
-
-message MessageRequest{
-  Message message = 1;
-  User from = 2;
-  User to = 3;
+  User from = 4;
+  User to = 5;
 }
 
 message MessageResponse{}
 
-message Connect{
-  User user = 1;
-  bool active = 2;
+message LoadMessageRequest{
+  User from = 1;
+  User to = 2;
 }
 
 message User{
@@ -31,6 +27,7 @@ message User{
 }
 
 service ChatService {
-  rpc sendMessage(MessageRequest) returns(MessageResponse);
-  rpc loadMessages(Connect) returns(stream Message);
+  rpc sendMessage(Message) returns(MessageResponse);
+  rpc loadMessages(LoadMessageRequest) returns(stream Message);
+  rpc notify(stream Message) returns(stream Message);
 }
